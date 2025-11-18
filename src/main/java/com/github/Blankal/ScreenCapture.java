@@ -6,13 +6,14 @@ import java.awt.Toolkit;  // For screen dimensions
 import java.awt.image.BufferedImage;  // For image handling
 import java.io.ByteArrayOutputStream;  // For image conversion
 import javax.imageio.ImageIO;  // For writing image to baos
+import java.io.File;  // Create files for debugging Agent vision
 
 public class ScreenCapture
 {
     private static Robot robot;
     private static ByteArrayOutputStream baos;
     private static Rectangle screenBounds;
-    private static final String format = "jpg";
+    private static final String format = "png";
     static  // init robot
     {
         try {
@@ -53,6 +54,9 @@ public class ScreenCapture
         try
         {
             BufferedImage screenshot = robot.createScreenCapture(screenBounds);
+            File outputFile = new File("assistant-yayyyy\\src\\main\\java\\com\\debugImages\\debugImage.jpg");  // For debugging
+            ImageIO.write(screenshot, format, outputFile);
+            System.out.println("\n\u001B[32mDebug image written to '" + outputFile.getAbsolutePath() + "'\u001B[0m\n");
             ImageIO.write(screenshot, format, baos);
             byte[] imageBytes = baos.toByteArray();  // Becomes byte array here
             baos.reset();  // Clear baos for re-use

@@ -14,12 +14,12 @@ public class GenerateText {
 
   /**
    * Creates a text response from the AI based on text instructions only.
-   * @param prompt A query or instructions for the AI to respond to (text only)
    * @param modelName The model to use for text generation
+   * @param prompt A query or instructions for the AI to respond to (text only)
    * @return AI Agent's text response
    * @see #generateFeedback(String, String) Optional image input version
    */
-  public static String generateFeedback(String prompt, String modelName) 
+  public static String generateFeedback(String modelName, String prompt) 
   {
     GenerateContentResponse response =
         client.models.generateContent(
@@ -27,6 +27,7 @@ public class GenerateText {
             prompt,
             null);
 
+    System.out.println(response.text());
     return response.text();
   }
 
