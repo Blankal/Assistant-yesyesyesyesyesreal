@@ -44,13 +44,6 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Open CV -->
-    <dependency>
-      <groupId>org.openpnp</groupId>
-      <artifactId>opencv</artifactId>
-      <version>[4.3.0,]</version>
-    </dependency>
-
     <!-- Google GenAI -->
     <dependency>
       <groupId>com.google.genai</groupId>

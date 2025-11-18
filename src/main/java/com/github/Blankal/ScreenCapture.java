@@ -7,14 +7,13 @@ import java.awt.image.BufferedImage;  // For image handling
 import java.io.ByteArrayOutputStream;  // For image conversion
 import javax.imageio.ImageIO;  // For writing image to baos
 import java.io.File;  // Create files for debugging Agent vision
-import com.github.Blankal.config;
+import static com.github.Blankal.config.IMAGE_TYPE;;
 
 public class ScreenCapture
 {
     private static Robot robot;
     private static ByteArrayOutputStream baos;
     private static Rectangle screenBounds;
-    private static final String IMAGE_TYPE = config.IMAGE_TYPE;
     static  // init robot
     {
         try {

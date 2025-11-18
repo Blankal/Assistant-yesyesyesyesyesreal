@@ -10,7 +10,7 @@ public class Main {
     {
         try
         {
-            Thread.sleep(2000);
+            Thread.sleep(5000);
             generateFeedback(
                 MODEL_TYPE,
                 "What can you read and see in this picture?" ,
@@ -19,7 +19,7 @@ public class Main {
         }
         catch(Exception e)
         {
-            System.out.println("Error in main loop: " + e);
+            System.out.println("Error in main loop: " + e.getMessage());
         }
     }
 }
