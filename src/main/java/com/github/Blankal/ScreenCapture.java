@@ -1,29 +1,68 @@
 package com.github.Blankal;
 
-import org.opencv.videoio.VideoCapture;
+import java.awt.Robot;  // For screen capture
+import java.awt.Rectangle;  // For screen dimensions
+import java.awt.Toolkit;  // For screen dimensions
+import java.awt.image.BufferedImage;  // For image handling
+import java.io.ByteArrayOutputStream;  // For image conversion
+import javax.imageio.ImageIO;  // For writing image to baos
 
 public class ScreenCapture
 {
-    static boolean camIsActive = false;
-    public static void main(String[] args)
+    private static Robot robot;
+    private static ByteArrayOutputStream baos;
+    private static Rectangle screenBounds;
+    private static final String format = "jpg";
+    static  // init robot
     {
-        VideoCapture cap;
-        try{
-            cap = new VideoCapture(0);
-            camIsActive = true;
+        try {
+            robot = new Robot();
+        } catch (java.awt.AWTException e) {
+            System.out.println("Failed to initialize Robot: " + e);
         }
-        catch (Exception e)
+    }
+    static  // init screen bounds
+    {
+        try
         {
-            e.printStackTrace();
+            screenBounds = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
         }
+        catch(Exception e)
+        {
+            System.out.println("Failed to get screen dimensions; " + e);
+        }
+    }
+    static  // init byte array
+    {
+        try
+        {
+            baos = new ByteArrayOutputStream();
+        }
+        catch(Exception e)
+        {
+            System.out.println("Failed to initialize BAOS: " + e);
+        }
+    }
 
-        if(cap != null)
+    /**
+   * Creates a screenshot of the current screen state and encodes it to a base64 string.
+   * @return base64 encoded string of current screen frame
+   */
+    public static String getFrame()
+    {
+        try
         {
-            System.out.println("Camera Opened");
+            BufferedImage screenshot = robot.createScreenCapture(screenBounds);
+            ImageIO.write(screenshot, format, baos);
+            byte[] imageBytes = baos.toByteArray();  // Becomes byte array here
+            baos.reset();  // Clear baos for re-use
+            String base64String = java.util.Base64.getEncoder().encodeToString(imageBytes);  // Convert to base64 string
+            return base64String;
         }
-        else
+        catch(Exception e)
         {
-            return -1;
+            System.out.println("Error capturing screen: " + e);
+            return null;
         }
     }
 
