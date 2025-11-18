@@ -38,7 +38,7 @@ public class GenerateText {
    * @return AI Agent's text response
    * @see #generateFeedback(String, String) Optional text-only input version
    */
-  public static void generateFeedback(String modelName, String prompt, String image)  // Image in 
+  public static String generateFeedback(String modelName, String prompt, String image)  // Image in 
   {
     GenerateContentResponse response =
         client.models.generateContent(
@@ -48,5 +48,6 @@ public class GenerateText {
             );
 
     System.out.println(response.text());
+    return response.text();
   }
 }
