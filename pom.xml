@@ -44,6 +44,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- OpenAI GenAI -->
+    <dependency>
+      <groupId>com.openai</groupId>
+      <artifactId>openai-java</artifactId>
+      <version>4.8.0</version>
+    </dependency>
+
     <!-- Google GenAI -->
     <dependency>
       <groupId>com.google.genai</groupId>

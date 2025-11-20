@@ -2,12 +2,11 @@ package com.github.Blankal;
 
 import com.google.genai.Client;  // AI Client
 import com.google.genai.types.GenerateContentResponse;  // Generative AI
+import static com.github.Blankal.config.INSTRUCTIONS;
 
-public class GenerateText {
+public class GeminiAPI {
 
   // Instructions for the Agent (WORK ON THIS SO IT UNDERSTANDS BEST)
-  private static String instructions = 
-      "I have provided you with an image in the base64 format. ";
 
   // The client gets the API key from the environment variable `GOOGLE_API_KEY` make sure to set it
   public static final Client client = new Client();
@@ -43,7 +42,7 @@ public class GenerateText {
     GenerateContentResponse response =
         client.models.generateContent(
             modelName,
-            instructions + prompt + "\nImage (Base64): " + image,
+            INSTRUCTIONS + prompt + "\nImage (Base64): " + image,
             null
             );
 
