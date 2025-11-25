@@ -54,7 +54,7 @@ public class ScreenCapture
         try
         {
             BufferedImage screenshot = robot.createScreenCapture(screenBounds);
-            File outputFile = new File("assistant-yayyyy\\src\\main\\java\\com\\debugImages\\debugImage." + getImageType());  // For debugging
+            File outputFile = new File("src\\main\\java\\com\\debugImages\\debugImage." + getImageType());  // For debugging
             ImageIO.write(screenshot, getImageType(), outputFile);  // Write debug image to file
             System.out.println("\n\u001B[32mDebug image written to '" + outputFile.getAbsolutePath() + "'\u001B[0m\n");
             ImageIO.write(screenshot, getImageType(), baos);
