@@ -1,62 +1,61 @@
 package com.github.Blankal;
-import com.openai.client.OpenAIClient;  // Instantiate Client object
-import com.openai.client.okhttp.OpenAIOkHttpClient;  // Instantiate Client object
-import com.openai.models.realtime.RealtimeResponseCreateParams;  // For real time generation
-import com.openai.models.responses.Response;  // Semi-real-time response handling
-import com.openai.models.responses.ResponseCreateParams;  // Response param creation
-import com.openai.models.chat.completions.messages.*;  // For picking messages from response list
 
-public class OpenAI_API 
-{
-    // Set key from env
-    private static String OPENAI_API_KEY;
-    private static OpenAIClient client;
-    static
-    {
-        try
-        {
-            OPENAI_API_KEY = System.getenv("OPENAI_API_KEY");
-        }
-        catch(Exception e)
-        {
-            System.out.println("Failed to obtain OPENAI_API_KEY from environment variables: " + e);
-            OPENAI_API_KEY = null;
-        }
-    }
-    
-    static
-    {
-        if(OPENAI_API_KEY != null)
-        {
-            try
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import static com.github.Blankal.config.getModelType;
+import static com.github.Blankal.config.getInstructions;
+
+
+    public class OpenAI_API {    
+
+        public static void generateStaticFeedback(String prompt) throws IOException, InterruptedException{
+            HttpClient client = HttpClient.newHttpClient(); 
+
+            String toPost = """
             {
-                final OpenAIClient client = OpenAIOkHttpClient.builder()
-                    .apiKey(OPENAI_API_KEY)
-                    .build();
+                "model":"%s",
+                "prompt":"%s",
+                "stream":false
             }
-            catch(Exception e)
-            {
-                System.out.println("Could not establish client: " + e);
-            }
+            """.formatted("llama3.2", prompt);
+
+            System.out.println("POST:" + toPost);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:11434/api/generate"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(toPost, StandardCharsets.UTF_8))
+                .build();
+            HttpResponse<String> response = client.send(request,BodyHandlers.ofString());
+            System.out.println("RESPONSE: " + response.body());
+            
+        }
+
+        public static void generateStaticFeedback(String prompt, String image) throws IOException, InterruptedException{
+            HttpClient client = HttpClient.newHttpClient(); 
+
+                String toPost = """
+                {
+                    "model":"%s",
+                    "prompt":"%s",
+                    "stream":false
+                }
+                """.formatted(getModelType(), prompt  + "Image (Base64): " + image);
+
+                System.out.println("POST:" + toPost);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:11434/api/generate"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(toPost, StandardCharsets.UTF_8))
+                .build();
+            HttpResponse<String> response = client.send(request,BodyHandlers.ofString());
+            System.out.println("RESPONSE: " + response.body());
+            
         }
     }
-
-    /**
-     * Generates feedback from OpenAI API using text only.
-     * @param model Which model to use
-     * @param prompt Text prompt for the AI
-     * @return AI-generated response as a String
-     */
-    public static String generateFeedback(String model, String prompt)
-    {
-        ResponseCreateParams params = ResponseCreateParams.builder()
-            .input(prompt)
-            .model(model)
-            .build();
-        Response chatCompletion = client.responses().create(params);  // Returns a list of choices of outputs
-        String message = chatCompletion._text().toString();  // Is thsi right???
-        return message;
-    }
-
-        
-}

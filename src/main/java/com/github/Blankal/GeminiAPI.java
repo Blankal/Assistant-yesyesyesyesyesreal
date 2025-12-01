@@ -18,7 +18,7 @@ public class GeminiAPI {
    * @return AI Agent's text response
    * @see #generateFeedback(String, String) Optional image input version
    */
-  public static String generateFeedback(String modelName, String prompt) 
+  public static String generateStaticFeedback(String modelName, String prompt) 
   {
     GenerateContentResponse response =
         client.models.generateContent(
@@ -37,7 +37,7 @@ public class GeminiAPI {
    * @return AI Agent's text response
    * @see #generateFeedback(String, String) Optional text-only input version
    */
-  public static String generateFeedback(String modelName, String prompt, String image)  // Image in 
+  public static String generateStaticFeedback(String modelName, String prompt, String image)  // Image in 
   {
     GenerateContentResponse response =
         client.models.generateContent(
