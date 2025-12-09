@@ -19,11 +19,11 @@ public class Main {
                     GeminiAPI.generateStaticFeedback(
                         getModelType(),
                         "What can you read and see in this picture?  Please include coordinates of any objects identified." ,
-                        getFrame()
+                        getFrame()  
                     );
                 case "openai", "open ai" ->
                     OpenAI_API.generateStaticFeedback( 
-                        "What do you see in this base64 image?",
+                        "provide Strict analyzises of images in JSON format with captions, detected elements, and text. Include coordinates of detected elements.",
                         getFrame()
                         );
                 default -> throw new IllegalArgumentException("Invalid brand chosen");
