@@ -13,9 +13,11 @@ public class config {
         }
     };
 
+    // Non-local models require keys
     private static final String MODEL_TYPE = "llama3.2-vision:11b";  // ex: "gemini-2.5-flash" or LOCAL_MODELS.get("LLaVA")
+    private static final String IMAGE_PARSER = "path-to-vision-model";
     private static final String MODEL_BRAND = "OpenAI";  // ex: "Google", "OpenAI"
-    private static final String IMAGE_TYPE = "png";  // Use to set image type for screenshot(Lossy formats may affect AI vision)
+    private static final String IMAGE_TYPE = "png";  // Use to set image type for screenshot(Lossy formats may mess with AI vision)
     private static final String INSTRUCTIONS = 
         "the following image is the screenshot of a computer screen. Step by step, carefully analyze the content of the image and provide STRICTED RULE a structured JSON text (captions, detected elements,text) ";
 
