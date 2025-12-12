@@ -1,53 +1,34 @@
 package com.github.Blankal;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.File;  // For setting directory of OmniParser
+import static com.github.Blankal.config.getCondaAddress;
+import static com.github.Blankal.config.getCondaPort;
 
-public class VisionHandler {
-
-    public static void initialize(String[] args)
-    {
-        try
-        {
-            ProcessBuilder pb = new ProcessBuilder();
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error intializing OmniParser: " + e);
-        }
-    }
-    
+public class VisionHandler 
+{
     /**
-     * Handler for obtaining OmniParser output (Omni only runs in python)
-     * 
-     * @return Outputs a JSON string containing names of detected screen elements and their positions
-    */
-    public static String getOmniParse()
+     * Initializes a local server for OmniParser(Python) and the main Java 
+     * app to communicate by starting the CondaServer.py file.
+     */
+    public static void init()
     {
         try
         {
-            ProcessBuilder pb = new ProcessBuilder("python", "-u", "Omni/Parser/Path");
-            Process OmniParserProcess = pb.start();
+            ProcessBuilder condaServerInit = new ProcessBuilder(
+            "conda", "run", "-n", "omniparser-env",
+            "python", "-m", "uvicorn", "server:app",
+            "--host", getCondaAddress(),
+            "--port", getCondaPort()
+            );
+            condaServerInit.directory(new File("src/main/java/com/github/Blankal/localAgents/OmniParser-v2/OmniParser"));
 
-            // Reads input from OmniParser
-            BufferedReader input = new BufferedReader(new InputStreamReader(OmniParserProcess.getInputStream()));
-            StringBuilder output = new StringBuilder();
-            String textLine;
-
-            while ((textLine = input.readLine()) != null)  // Appends until no more output
-            {
-                output.append(textLine + ",\n");
-            }
-
-            int exitCode = OmniParserProcess.waitFor();  // Hold program until OmniParser can output
-            System.out.println("OmniParser exit code: " + exitCode);
-            input.close();
-            return output.toString();
+            condaServerInit.redirectErrorStream(true);
+            Process condaServer = condaServerInit.start();
         }
         catch (Exception e)
         {
-            System.out.println("Error in OmniParser execution: " + e);
-            return null;
+            System.out.println("Failed to start conda server: " + e);
         }
+
     }
 }
