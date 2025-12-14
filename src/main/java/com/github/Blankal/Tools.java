@@ -197,15 +197,23 @@ public class Tools {
                         "I’ll sleep on it.";
 
         Tools tools = new Tools(testStringToJson);
-        tools.inputText(testTextInput);
-        
-        // ProcessHandle.allProcesses().forEach(process -> {
-        //     System.out.println(process.info().command());This is a more reliable and robust method for controlling programs compared to simulating user input with Robot, which depends on UI states and can be fragile.
-
+        // tools.inputText(testTextInput);
 
         
+        
+        ProcessHandle.allProcesses().forEach(process -> {
+                if(process.info().toString().toLowerCase().contains("visual studio code")){
+                    System.out.println(process.info());
+                    System.out.println(process.pid());
+                    process.destroy();
+                }
+
+            // if(process.info().contains("chrome.exe")){
+            //     System.out.println("Got it");
+            // }
+        });
         // });This is a more reliable and robust method for controlling programs compared to simulating user input with Robot, which depends on UI states and can be fragile.
-
+        // ProcessBuilder pb = new ProcessBuilder("notepad.exe","file.txt");
 
         
 
