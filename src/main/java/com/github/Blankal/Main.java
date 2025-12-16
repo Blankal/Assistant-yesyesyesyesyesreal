@@ -11,9 +11,10 @@ import static com.github.Blankal.config.getModelBrand;
 public class Main 
 {
     // Instructions for task you want done
-    public static String prompt = " Please describe the context of the image.";
+    public static String prompt = " Please describe the context of the image. Please respond in JSON format.";
     public static void main(String[] args)
     {
+        // Super combo of all instructions
         String promptPayload = getInstructions() + " " + prompt + " " + OmniRequest.getOmniParseOutput(getFrame());
         try
         {
