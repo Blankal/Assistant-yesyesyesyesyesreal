@@ -1,6 +1,7 @@
 package com.github.Blankal;
 import java.util.HashMap;
 import java.util.Map;
+import java.awt.Toolkit;
 
 public class config {
 
@@ -22,16 +23,13 @@ public class config {
         But you could always try to use a paid key with a larger model for faster, smarter results
     */
 
-    private static final String MODEL_TYPE = "llama3.2-vision:11b";  // ex: "gemini-2.5-flash" or LOCAL_MODELS.get("LLaVA")
+    private static final String MODEL_TYPE = "llama3.2";  // ex: "gemini-2.5-flash" or LOCAL_MODELS.get("LLaVA")
     private static final String MODEL_BRAND = "OpenAI";  // ex: "Google", "OpenAI"
+    private static final int[] SCREEN_DIMENSIONS = { Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height };  // Only reads monitor 1 :(
     private static final String IMAGE_TYPE = "png";  // Use to set image type for screenshot(Lossy formats may mess with AI vision)
-    private static final String INSTRUCTIONS =  // Instructions used to test model, final product will allow dynamic input via voice or GUI.
-        "the following image is the screenshot of a computer screen. Step by step, carefully analyze the content of the image and provide STRICTED RULE a structured JSON text (captions, detected elements, text) ";
-    
-    // Conda config not yet implemented, no need to change these for now.
-    private static final String CONDA_PATH = "C:/Users/caleb/miniconda3/conda.exe";  // Path to conda exe
-    private static final String CONDA_ADDRESS = "127.0.0.1";  // IP for conda local server
-    private static final String CONDA_PORT = "8000";  // Port for conda local server
+    private static final String INSTRUCTIONS =  // Instructions used to orient the model. DO NOT CHANGE unless you know what you're doing.
+        "You are given all necessary context: the input is a JSON array of UI elements detected from a screenshot of the current computer screen (OmniParser output) with added mouseClickCoordinate for clicking; treat it as screen UI data and do not ask for more context or clarification—if a task cannot be completed from the JSON and the user’s instruction alone, output exactly INSUFFICIENT_INFORMATION followed by a short list of what specific missing detail is required; each element may include type, bbox ([x1,y1,x2,y2] pixels), interactive (true/false), content, and mouseClickCoordinate ([x,y] pixels); use only these fields, do not invent elements/coordinates, and follow the user’s task strictly without extra commentary.";
+    private static final String OMNI_PARSER_ADDRESS = "http://127.0.0.1:8001/";  // Can only be changed from "omniparserserver.py" file
 
     // CONFIG GETTERS
     public static String getModelType()
@@ -42,6 +40,10 @@ public class config {
     {
         return MODEL_BRAND;
     }
+    public static int[] getScreenDimensions()
+    {
+        return SCREEN_DIMENSIONS;
+    }
     public static String getImageType()
     {
         return IMAGE_TYPE;
@@ -50,16 +52,8 @@ public class config {
     {
         return INSTRUCTIONS;
     }
-    public static String getCondaPath()
+    public static String getOmniParserAddress()
     {
-        return CONDA_PATH;
-    }
-    public static String getCondaAddress()
-    {
-        return CONDA_ADDRESS;
-    }
-    public static String getCondaPort()
-    {
-        return CONDA_PORT;
+        return OMNI_PARSER_ADDRESS;
     }
 }

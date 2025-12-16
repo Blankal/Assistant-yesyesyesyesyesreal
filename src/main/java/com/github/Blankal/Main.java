@@ -2,40 +2,30 @@ package com.github.Blankal;
 
 import com.github.Blankal.GeminiAPI;  // Generate text based off text and/or image input (Google)
 import com.github.Blankal.OpenAI_API;  // Generate Text based off Text and/or image input (OpenAI)
-import static com.github.Blankal.ScreenCapture.getFrame;  // Screenshot Frames for Feeding into AI
+import com.github.Blankal.OmniRequest;  // Used to let the AI model see via a Json array
+import static com.github.Blankal.ScreenCapture.getFrame;  // Generates base64 screenshots to be analyzed by OmniParse
 import static com.github.Blankal.config.getModelType;
+import static com.github.Blankal.config.getInstructions;
 import static com.github.Blankal.config.getModelBrand;
 
-
-public class Main {
+public class Main 
+{
+    // Instructions for task you want done
+    public static String prompt = " Please describe the context of the image.";
     public static void main(String[] args)
     {
+        String promptPayload = getInstructions() + " " + prompt + " " + OmniRequest.getOmniParseOutput(getFrame());
         try
         {
-            Thread.sleep(5000);  // Debug so you have time to leave VSCode before screenshot occurs
-            switch(getModelBrand().toLowerCase())  // Parse choice of AI brand to verify that Agents use proper API
-            {
-                case "google" -> 
-                    GeminiAPI.generateStaticFeedback(
-                        getModelType(),
-                        "What can you read and see in this picture?  Please include coordinates of any objects identified." ,
-                        getFrame()  
-                    );
-                case "openai", "open ai" ->
-                    OpenAI_API.generateStaticFeedback( 
-                        "provide Strict analyzises of images in JSON format with captions, detected elements, and text. Include coordinates of detected elements.",
-                        getFrame()
-                        );
-                default -> throw new IllegalArgumentException("Invalid brand chosen");
-            }
+            OpenAI_API.generateStaticFeedback(promptPayload);
         }
         catch(IllegalArgumentException e)
         {
-            System.out.println("Error in main loop: " + e.toString());
+            System.out.println("Error in main loop: " + e);
         }
         catch(Exception e)
         {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
     }
 }

@@ -22,7 +22,7 @@ public class ScreenCapture
             System.out.println("Failed to initialize Robot: " + e);
         }
     }
-    static  // init screen bounds
+    static
     {
         try
         {
@@ -33,7 +33,7 @@ public class ScreenCapture
             System.out.println("Failed to get screen dimensions; " + e);
         }
     }
-    static  // init byte array
+    static
     {
         try
         {
@@ -47,7 +47,7 @@ public class ScreenCapture
 
     /**
    * Creates a screenshot of the current screen state and encodes it to a base64 string.
-   * @return base64 encoded string of current screen frame
+   * @return base64 encoded string made from an image of the current screen
    */
     public static String getFrame()
     {
