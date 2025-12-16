@@ -6,4 +6,5 @@ com\github\Blankal\GeminiAPI.class
 com\github\Blankal\OmniRequest.class
 com\github\Blankal\Tools$1.class
 com\github\Blankal\config$1.class
+com\github\Blankal\Tools$2.class
 com\github\Blankal\OpenAI_API.class
