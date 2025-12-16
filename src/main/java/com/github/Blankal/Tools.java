@@ -1,14 +1,23 @@
 package com.github.Blankal;
-
+import java.awt.Desktop;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.lang.ProcessBuilder; // will handle computer environment interactions
-import java.lang.ProcessHandle; // will handle computer environment interactions
-import java.lang.Process;
-
-import com.fasterxml.jackson.databind.ObjectMapper;  // will convert String output from llm to json dataset
+import java.util.Collections;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /*
 In order for LLM agent be able to work with computer environment it will return 
@@ -102,16 +111,57 @@ public class Tools {
         }
 
         try {
+            // System.out.println("Raw response: " + response); -- debugging purpose 
             actions = mapper.readValue(response, Map.class); // string json to Map
         } catch (Exception e) {
             System.out.println("Failed to convert response to json dataset: " + e);
         }
-        System.out.println("Parsed actions: " + actions);
-        System.out.println(actions.get("action"));
+        // System.out.println("Parsed actions: " + actions);
+        // System.out.println(actions.get("action"));
 
-        for (Map.Entry<String, Object> value : actions.entrySet()) {
-            System.out.println(value);
+        Object actionObj = actions.get("action");
+        System.out.println(actionObj);
+        if (actionObj instanceof Map<?, ?> actionMap) {
+
+            for (Object actionName : actionMap.keySet()) {
+                System.out.println(actionName);
+                Object actionParameter = actionMap.get(actionName);
+                System.out.println(actionParameter);
+                if (actionName.toString().equalsIgnoreCase("mousemove")){
+                    double[] coords = ((List<Number>) actionParameter).stream().mapToDouble(Number::doubleValue).toArray();
+                    this.moveMouse((int)coords[0], (int)coords[1]);
+                }
+                else if (actionName.toString().equalsIgnoreCase("mouseclick")){
+                    this.clickMouse(actionParameter.toString());
+                }
+                else if (actionName.toString().equalsIgnoreCase("inputtext")){
+                    this.inputText(actionParameter.toString());
+                }
+                else if (actionName.toString().equalsIgnoreCase("scrollmouse")){
+                    int notches = ((Number) actionParameter).intValue();
+                    
+                    this.scrollMouse(notches);
+                }
+                else if (actionName.toString().equalsIgnoreCase("browse")){
+                    this.browse(actionParameter.toString());
+                }
+                else if (actionName.toString().equalsIgnoreCase("urlbrowse")){
+                    this.urlBrowse(actionParameter.toString());
+                }
+                else if (actionName.toString().equalsIgnoreCase("browseyoutube")){
+                    this.browseYoutube(actionParameter.toString());
+                }
+                else{
+                    System.out.println("Unknown action: " + actionName);
+                }
+            }
+        } else {
+            System.out.println("'action' is missing or not an object: " + actionObj);
         }
+        // for (Map.Entry<String, Object> value : actions.entrySet()) {
+        //     System.out.println(value);
+        // }
+        
     }
 
     public boolean inputText(String text){
@@ -162,24 +212,241 @@ public class Tools {
         robot.mouseMove(x, y);
     }
 
+    public void scrollMouse(int notches){
+        robot.mouseWheel(notches);
+    }
+
+    public void clickMouse(String button){
+        if(button.equalsIgnoreCase("left")){
+            robot.mousePress(java.awt.event.InputEvent.BUTTON1_DOWN_MASK);
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON1_DOWN_MASK);
+        } else if(button.equalsIgnoreCase("right")){
+            robot.mousePress(java.awt.event.InputEvent.BUTTON3_DOWN_MASK);
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON3_DOWN_MASK);
+        } else if(button.equalsIgnoreCase("middle")){
+            robot.mousePress(java.awt.event.InputEvent.BUTTON2_DOWN_MASK);
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON2_DOWN_MASK);
+        } else {
+            System.out.println("Unknown mouse button: " + button);
+        }
+        
+    }
+
+
+    public void browse(String toSearch){
+
+        String uri = "https://google.com/search?q=" ;
+
+        // String youtube = "https://www.youtube.com/results?search_query=";
+
+
+        String encoded = URLEncoder.encode(toSearch, StandardCharsets.UTF_8);
+        String fullUri = uri + encoded;
+
+         try{
+            Desktop desktop = Desktop.getDesktop();
+            desktop.browse(new URI(fullUri));
+            // desktop.open(openApp);
+            Thread.sleep(2000);
+        } catch (Exception e){
+            System.out.println("Failed to open URL: " + e);
+        }
+    
+    }
+    
+    public void urlBrowse(String url){
+
+         String fullUri = url;
+
+        try{
+            Desktop desktop = Desktop.getDesktop();
+            desktop.browse(new URI(fullUri));
+            // desktop.open(openApp);
+            Thread.sleep(2000);
+        } catch (Exception e){
+            System.out.println("Failed to open URL: " + e);
+        }
+    }
+
+     public void browseYoutube(String toSearch){
+
+        String uri = "https://www.youtube.com/results?search_query=" ;
+
+        // String youtube = "https://www.youtube.com/results?search_query=";
+
+
+        String encoded = URLEncoder.encode(toSearch, StandardCharsets.UTF_8);
+        String fullUri = uri + encoded;
+
+         try{
+            Desktop desktop = Desktop.getDesktop();
+            desktop.browse(new URI(fullUri));
+            Thread.sleep(2000);
+            // desktop.open(openApp);
+        } catch (Exception e){
+            System.out.println("Failed to open URL: " + e);
+        }
+
+    }
+
+    public void openPath(String appPath){
+        try{
+            Desktop desktop = Desktop.getDesktop();
+            desktop.open(new java.io.File(appPath));
+        } catch (Exception e){
+            System.out.println("Failed to open application: " + e);
+        }
+    }
+
+  //#######################################################################
+
+public List<String> findPathIn(String startPath){ 
+    Path root = Paths.get(startPath);
+    ArrayList<String> foundPaths = new ArrayList<>();
+    try {
+        Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                    throws IOException {
+                if (Files.isReadable(file)) {
+                    System.out.println("Found file: " + file);
+                    if(file.toString().toLowerCase().contains("chrome")){
+                        foundPaths.add(file.toString());
+                        System.out.println("Matched file: " + file);
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc)
+                    throws IOException {
+                // Access denied or other I/O error -> skip
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    } catch (IOException e) {
+        System.out.println("Failed to find path: " + e);
+    }
+        return foundPaths;
+    }
 
 
     
 
     public static void main(String[] args){
+
         String testStringToJson = """
             {
-                "action": "click",
-                "coordinates": {
-                "x": 150,
-                "y": 300
+                "context": "user asked to complete a homework on google classroom for english 12",
+                "whatsDone": [
+                    "opened google chrome browser",
+                    "navigated to google classroom",
+                    "logged into the account",
+                    "navigated to the english 12 class",
+                    "opened the homework assignment"
+                ],
+                "toDo": [
+                    {
+                    "task": "read the homework instructions",
+                    "status": "in progress",
+                    "details": "instruction states to write a 1000 word essay on the topic of 'The impact of technology on modern education'"
+                    },
+
+                    {
+                    "task": "research the topic online",
+                    "status": "not started"
+                    },
+
+                    {
+                    "task": "write a draft of the homework",
+                    "status": "not started"
+                    },
+
+                    {
+                    "task": "proofread and edit the draft",
+                    "status": "not started"
+                    },
+
+                    {
+                    "task": "submit the homework on google classroom",
+                    "status": "not started"
+                    }
+
+                ],
+                "KeyInformation": {
+                    "due date": "2024-10-15",
+                    "word count": "1000 words",
+                    "formatting requirements": "double-spaced, 12pt Times New Roman font, APA citation style"
+                },
+                "ToolList": [
+                    {
+                    "name": "browse",
+                    "description": "String input allowed. UTF-8 encoding only. USE IF DO NOT HAVE ACCESS TO THE INTERNET"
+                    },
+                    {
+                    "name": "inputText",
+                    "description": "String input allowed. UTF-8 encoding only"
+                    },
+                    {
+                    "name": "browseYoutube",
+                    "description": "String input allowed. UTF-8 encoding only. USE IF DO NOT HAVE ACCESS TO THE INTERNET"
+                    },
+                    {
+                    "name": "moveMouse",
+                    "description": "STRICTLY coordinates [x,y]"
+                    },
+                    {
+                    "name": "scrollMouse",
+                    "description": "STRICTLY integer. Positive Integer Input to scroll down. Negative Integer Input to scroll up"
+                    },
+                    {
+                    "name": "clickMouse",
+                    "description": "STRICTLY 'left', 'right' or 'middle'"
+                    },
+                    {
+                    "name":"urlBrowse",
+                    "description":"URL STRICTLY. String input. UTF-8 encoding only. USE TO OPEN A SPECIFIC URL"
+                    }
+                    
+
+                ],
+                "actionHistory": [
+                    {
+                    "mouseMove": [500, 300],
+                    "mouseClick": "left",
+                    "inputText": "Hello, World!"
+                    },
+                    {
+                    "browse": "The impact of technology on modern education"
+                    },
+                    {
+                    "mouseScroll": 100
+                    }
+                ],
+                "action": {
+                    "urlBrowse": "https://www.youtube.com/results?search_query=copilot+tutorial",
+                    "scrollMouse": 600,
+                    "mouseMove": [420, 430],
+                    "mouseClick": "left",
+                    "scrollMouse": 900,
+                    "mouseMove": [1180, 680],
+                    "mouseClick": "left"
+                },
+                "WhatToDoNext": "browse the topic online to gather information for the essay",
+                "ScreenElements":"%s",
+                "Finished": false
                 }
-            },
-            {
-                "action": "type",
-                "text": "Hello, World!"
+
+
             }
-            """;
+            """.formatted("Image");    
+
+
+
+
+
+
 
 
         String testTextInput = "“I can’t sleep without them!” my face scrunched up, clutching piles of cushions in an uncharacteristic moment of seven-year-old stubbornness. An overnight trip without my Stitch face pillow? My dolphin pillow pets?  This was absolutely unacceptable, robbing me of the comfort and structure that was my nightly routine. Today, ten-years later, I still relish flopping backwards onto my bed, cushioned by my carefully curated collection of pillows, each encasing a different side of myself:\r\n" + //
@@ -197,21 +464,20 @@ public class Tools {
                         "I’ll sleep on it.";
 
         Tools tools = new Tools(testStringToJson);
+
         // tools.inputText(testTextInput);
 
-        
-        
-        ProcessHandle.allProcesses().forEach(process -> {
-                if(process.info().toString().toLowerCase().contains("visual studio code")){
-                    System.out.println(process.info());
-                    System.out.println(process.pid());
-                    process.destroy();
-                }
+        // ProcessBuilder pb = new ProcessBuilder("notepad.exe");
+        // System.out.println("Started process with PID: " + handle.pid());
+      
 
-            // if(process.info().contains("chrome.exe")){
-            //     System.out.println("Got it");
-            // }
-        });
+        
+        // System.out.println(tools.findPathIn("C:/Users/Davyd/Documents"));
+
+        // tools.openPath("C:\\Users\\Davyd\\Pictures\\tumblr_3aef13b96a08c81b12e521b0205eb673_7767ab57_500.gif");
+
+
+
         // });This is a more reliable and robust method for controlling programs compared to simulating user input with Robot, which depends on UI states and can be fragile.
         // ProcessBuilder pb = new ProcessBuilder("notepad.exe","file.txt");
 
