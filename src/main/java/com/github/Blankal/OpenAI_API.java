@@ -21,7 +21,7 @@ import static com.github.Blankal.config.getModelType;
          * @throws IOException
          * @throws InterruptedException
          */
-        public static void generateStaticFeedback(String prompt) throws IOException, InterruptedException{
+        public static String generateStaticFeedback(String prompt) throws IOException, InterruptedException{
             HttpClient client = HttpClient.newHttpClient(); 
 
             JsonObject jsonPayload = new JsonObject();
@@ -42,6 +42,7 @@ import static com.github.Blankal.config.getModelType;
             System.out.println("RESPONSE: " + response.body());
             JsonObject jsonResponse = new Gson().fromJson(response.body(), JsonObject.class);
             System.out.println(jsonResponse.get("response"));
+            return jsonResponse.get("response").toString();
             
         }
 
