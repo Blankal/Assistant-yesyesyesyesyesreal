@@ -5,15 +5,6 @@ import java.awt.Toolkit;
 
 public class config {
 
-    // Key - Value pairs for supported local models (when installing your own, best practice is to add them yourself here)
-    private static final Map<String, String> LOCAL_MODELS = new HashMap<String, String>()
-    {
-        {
-            put("LLaVA", "assistant-yayyyy/src/main/java/com/localAgents/llava");
-            put("OLLAMA-3.2", "assistant-yayyyy/src/main/java/com/localAgents/OLLAMA-3.2");
-        }
-    };
-
     /* 
         - Non-local models require keys, REMEMBER TO KEEP KEYS PRIVATE and that you have to set your ENV variables properly to use them
         - Free keys may be available with limited usage from OpenAI and Google on their websites
@@ -23,12 +14,12 @@ public class config {
         But you could always try to use a paid key with a larger model for faster, smarter results
     */
 
-    private static final String MODEL_TYPE = "llama3.2";  // ex: "gemini-2.5-flash" or LOCAL_MODELS.get("LLaVA")
+    private static final String MODEL_TYPE = "llama3.1";  // ex: "gemini-2.5-flash, llama3.2"
     private static final String MODEL_BRAND = "OpenAI";  // ex: "Google", "OpenAI"
     private static final int[] SCREEN_DIMENSIONS = { Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height };  // Only reads monitor 1 :(
     private static final String IMAGE_TYPE = "png";  // Use to set image type for screenshot(Lossy formats may mess with AI vision)
     private static final String INSTRUCTIONS =  // Instructions used to orient the model. DO NOT CHANGE unless you know what you're doing.
-        "You are given all necessary context: the input is a JSON array of UI elements detected from a screenshot of the current computer screen (OmniParser output) with added mouseClickCoordinate for clicking; treat it as screen UI data and do not ask for more context or clarification—if a task cannot be completed from the JSON and the user’s instruction alone, output exactly INSUFFICIENT_INFORMATION followed by a short list of what specific missing detail is required; each element may include type, bbox ([x1,y1,x2,y2] pixels), interactive (true/false), content, and mouseClickCoordinate ([x,y] pixels); use only these fields, do not invent elements/coordinates, and follow the user’s task strictly without extra commentary.";
+        "You are a planner/agent that must respond with exactly ONE valid JSON object and nothing else (no markdown, no code fences, no explanation). The JSON must match this schema and key spelling exactly: {\"context\":string,\"completedTasks\":string[],\"toDo\":[{\"task\":string,\"status\":\"not started\"|\"in progress\"|\"done\",\"details\"?:string}],\"KeyInformation\":{\"due date\":string,\"word count\":string,\"formatting requirements\":string},\"ToolList\":[{\"name\":string,\"description\":string}],\"actionHistory\":object[],\"action\":object,\"WhatToDoNext\":string,\"ScreenElements\":string,\"Finished\":boolean}. Rules: Output MUST be valid JSON (double quotes, no trailing commas). Include every top-level key shown in the schema, even if empty (use [] or \"\" or {}). Do not invent tools: ToolList must only contain tools provided by the user input. action must only use tool names from ToolList as keys. If required information is missing, set the relevant value to \"\" (or []), set \"Finished\" to false, and set \"WhatToDoNext\" to a concrete step to obtain the missing info.";
     private static final String OMNI_PARSER_ADDRESS = "http://127.0.0.1:8001/";  // Can only be changed from "omniparserserver.py" file
 
     // CONFIG GETTERS
