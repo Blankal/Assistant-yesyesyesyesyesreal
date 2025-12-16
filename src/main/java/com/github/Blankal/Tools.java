@@ -1,14 +1,23 @@
 package com.github.Blankal;
-
+import java.awt.Desktop;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.lang.ProcessBuilder; // will handle computer environment interactions
-import java.lang.ProcessHandle; // will handle computer environment interactions
-import java.lang.Process;
 
-import com.fasterxml.jackson.databind.ObjectMapper;  // will convert String output from llm to json dataset
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /*
 In order for LLM agent be able to work with computer environment it will return 
@@ -162,23 +171,141 @@ public class Tools {
         robot.mouseMove(x, y);
     }
 
+    public void scrollMouse(int notches){
+        robot.mouseWheel(notches);
+    }
+    
+    public void clickMouse(String button){
+        if(button.equalsIgnoreCase("left")){
+            robot.mousePress(java.awt.event.InputEvent.BUTTON1_DOWN_MASK);
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON1_DOWN_MASK);
+        } else if(button.equalsIgnoreCase("right")){
+            robot.mousePress(java.awt.event.InputEvent.BUTTON3_DOWN_MASK);
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON3_DOWN_MASK);
+        } else if(button.equalsIgnoreCase("middle")){
+            robot.mousePress(java.awt.event.InputEvent.BUTTON2_DOWN_MASK);
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON2_DOWN_MASK);
+        } else {
+            System.out.println("Unknown mouse button: " + button);
+        }
+        
+    }
 
+
+    public void browse(String toSearch){
+
+        String uri = "https://google.com/search?q=" ;
+
+        // String youtube = "https://www.youtube.com/results?search_query=";
+
+
+        String encoded = URLEncoder.encode(toSearch, StandardCharsets.UTF_8);
+        String fullUri = uri + encoded;
+
+         try{
+            Desktop desktop = Desktop.getDesktop();
+            desktop.browse(new URI(fullUri));
+            // desktop.open(openApp);
+        } catch (Exception e){
+            System.out.println("Failed to open URL: " + e);
+        }
+
+    }
+
+     public void browseYoutube(String toSearch){
+
+        String uri = "https://www.youtube.com/results?search_query=" ;
+
+        // String youtube = "https://www.youtube.com/results?search_query=";
+
+
+        String encoded = URLEncoder.encode(toSearch, StandardCharsets.UTF_8);
+        String fullUri = uri + encoded;
+
+         try{
+            Desktop desktop = Desktop.getDesktop();
+            desktop.browse(new URI(fullUri));
+            // desktop.open(openApp);
+        } catch (Exception e){
+            System.out.println("Failed to open URL: " + e);
+        }
+
+    }
+
+    public void openPath(String appPath){
+        try{
+            Desktop desktop = Desktop.getDesktop();
+            desktop.open(new java.io.File(appPath));
+        } catch (Exception e){
+            System.out.println("Failed to open application: " + e);
+        }
+    }
+
+  //#######################################################################
+
+public List<String> findPathIn(String startPath){ {
+    Path root = Paths.get(startPath);
+    ArrayList<String> foundPaths = new ArrayList<>();
+    try {
+        Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                    throws IOException {
+                if (Files.isReadable(file)) {
+                    System.out.println("Found file: " + file);
+                    if(file.toString().toLowerCase().contains("chrome")){
+                        foundPaths.add(file.toString());
+                        System.out.println("Matched file: " + file);
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc)
+                    throws IOException {
+                // Access denied or other I/O error -> skip
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    } catch (IOException e) {
+        System.out.println("Failed to find path: " + e);
+    }
+        return foundPaths;
+    }
+}
 
     
 
     public static void main(String[] args){
         String testStringToJson = """
             {
-                "action": "click",
-                "coordinates": {
-                "x": 150,
-                "y": 300
-                }
+               "context": "user asked to complete a homework on google classroom for english 12",
+               "what's done: [
+                   "opened google chrome browser",
+                   "navigated to google classroom",
+                   "logged into the account",
+                   "navigated to the english 12 class",
+                   "opened the homework assignment"
+               ],
+                "toDo": [
+                   "read the homework instructions",
+                   "research the topic online",
+                   "write a draft of the homework",
+                   "proofread and edit the draft",
+                   "submit the homework on google classroom"
+                ],
+                "ToolList": [
+                   "browse",
+                   "inputText",
+                   "browseYoutube",
+                   "moveMouse",
+                   "scrollMouse",
+
+                ],
+
             },
-            {
-                "action": "type",
-                "text": "Hello, World!"
-            }
+
             """;
 
 
@@ -197,21 +324,20 @@ public class Tools {
                         "I’ll sleep on it.";
 
         Tools tools = new Tools(testStringToJson);
+
         // tools.inputText(testTextInput);
 
-        
-        
-        ProcessHandle.allProcesses().forEach(process -> {
-                if(process.info().toString().toLowerCase().contains("visual studio code")){
-                    System.out.println(process.info());
-                    System.out.println(process.pid());
-                    process.destroy();
-                }
+        // ProcessBuilder pb = new ProcessBuilder("notepad.exe");
+        // System.out.println("Started process with PID: " + handle.pid());
+      
 
-            // if(process.info().contains("chrome.exe")){
-            //     System.out.println("Got it");
-            // }
-        });
+        
+        System.out.println(tools.findPathIn("C:/Users/Davyd/Documents"));
+
+        // tools.openPath("C:\\Users\\Davyd\\Pictures\\tumblr_3aef13b96a08c81b12e521b0205eb673_7767ab57_500.gif");
+
+
+
         // });This is a more reliable and robust method for controlling programs compared to simulating user input with Robot, which depends on UI states and can be fragile.
         // ProcessBuilder pb = new ProcessBuilder("notepad.exe","file.txt");
 
