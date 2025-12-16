@@ -52,8 +52,9 @@ import static com.github.Blankal.config.getModelType;
          * @param image Image in base64 string format
          * @throws IOException
          * @throws InterruptedException
+         * @return Returns a string of Agent output
          */
-        public static void generateStaticFeedback(String prompt, String image) throws IOException, InterruptedException{
+        public static String generateStaticFeedback(String prompt, String image) throws IOException, InterruptedException{
             HttpClient client = HttpClient.newHttpClient(); 
 
             JsonObject jsonPayload = new JsonObject();
@@ -78,5 +79,6 @@ import static com.github.Blankal.config.getModelType;
             System.out.println("RESPONSE: " + response.body());
             JsonObject jsonResponse = new Gson().fromJson(response.body(), JsonObject.class);
             System.out.println(jsonResponse.get("response"));
+            return jsonResponse.get("response").toString();
         }
     }

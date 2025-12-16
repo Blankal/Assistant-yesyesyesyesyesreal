@@ -16,6 +16,7 @@ public class config {
 
     private static final String MODEL_TYPE = "llama3.1";  // ex: "gemini-2.5-flash, llama3.2"
     private static final String MODEL_BRAND = "OpenAI";  // ex: "Google", "OpenAI"
+    private static final String USER_PROMPT = "Please use the function to bring me to youtube";
     private static final int[] SCREEN_DIMENSIONS = { Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height };  // Only reads monitor 1 :(
     private static final String IMAGE_TYPE = "png";  // Use to set image type for screenshot(Lossy formats may mess with AI vision)
     private static final String INSTRUCTIONS =  // Instructions used to orient the model. DO NOT CHANGE unless you know what you're doing.
@@ -30,6 +31,10 @@ public class config {
     public static String getModelBrand()
     {
         return MODEL_BRAND;
+    }
+    public static final String getUserPrompt()
+    {
+        return USER_PROMPT;
     }
     public static int[] getScreenDimensions()
     {

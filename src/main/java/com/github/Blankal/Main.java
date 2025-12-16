@@ -5,15 +5,15 @@ import com.github.Blankal.OpenAI_API;  // Generate Text based off Text and/or im
 import com.github.Blankal.OmniRequest;  // Used to let the AI model see via a Json array
 import static com.github.Blankal.ScreenCapture.getFrame;  // Generates base64 screenshots to be analyzed by OmniParse
 import static com.github.Blankal.config.getModelType;
+import static com.github.Blankal.config.getUserPrompt;
 import static com.github.Blankal.config.getInstructions;
 import static com.github.Blankal.config.getModelBrand;
 
 public class Main 
 {
     // Instructions for task you want done
-    public static String prompt = " Please describe the general look of the image presented.";
     // Super string
-    public static String payloadString = getInstructions()+" "+prompt+" "+OmniRequest.getOmniParseOutput(getFrame());
+    public static String payloadString = getInstructions()+" "+getUserPrompt()+" "+OmniRequest.getOmniParseOutput(getFrame());
 
     public static void OpenAI_Task_Resolver(String payload, int maxLoops)
     {
@@ -30,10 +30,11 @@ public class Main
         }
         catch (Exception e){ System.out.println("OpenAI_Task_Resolver_Error: " + e); }
     }
+    
     public static void main(String[] args)
     {
         // Super combo of all instructions
-        String promptPayload = getInstructions() + " " + prompt + " " + OmniRequest.getOmniParseOutput(getFrame());
+        String promptPayload = getInstructions() + " " + getUserPrompt() + " " + OmniRequest.getOmniParseOutput(getFrame());
         try
         {
             OpenAI_API.generateStaticFeedback(payloadString);
