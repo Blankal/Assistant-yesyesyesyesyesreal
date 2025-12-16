@@ -16,6 +16,10 @@ To activate the environment, type `cd \path\to\localAgents\OmniParser\` and then
 ### 3. After setting your environment, be sure to edit config.java for use-case.
 The only things under config you should really need to change are 1. Model brand, 2. Model type, the prompt is more like pre instructions to orient the model than a user input thing.
 
+### 4. Start OmniParser server and edit prompt in main
+ADD INFO
+
+
 ---
 
 ## Common Bug Fixes:
