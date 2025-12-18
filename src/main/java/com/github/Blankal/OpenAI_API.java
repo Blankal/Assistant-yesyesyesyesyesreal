@@ -31,7 +31,7 @@ import static com.github.Blankal.config.getModelType;
 
             String toPost = new Gson().toJson(jsonPayload);
 
-            System.out.println("POST:" + toPost);
+            //System.out.println("POST: " + toPost);
 
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:11434/api/generate"))

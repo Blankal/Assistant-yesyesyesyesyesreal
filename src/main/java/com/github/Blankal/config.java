@@ -19,9 +19,9 @@ public class config {
     private static final String USER_PROMPT = "Please use the function to bring me to youtube";
     private static final int[] SCREEN_DIMENSIONS = { Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height };  // Only reads monitor 1 :(
     private static final String IMAGE_TYPE = "png";  // Use to set image type for screenshot(Lossy formats may mess with AI vision)
-    private static final String INSTRUCTIONS =  // Instructions used to orient the model. DO NOT CHANGE unless you know what you're doing.
+    private static final String SYSTEM_PROMPT =  // Instructions used to orient the model. DO NOT CHANGE unless you know what you're doing.
         "You are a planner/agent that must respond with exactly ONE valid JSON object and nothing else (no markdown, no code fences, no explanation). The JSON must match this schema and key spelling exactly: {\"context\":string,\"completedTasks\":string[],\"toDo\":[{\"task\":string,\"status\":\"not started\"|\"in progress\"|\"done\",\"details\"?:string}],\"KeyInformation\":{\"due date\":string,\"word count\":string,\"formatting requirements\":string},\"ToolList\":[{\"name\":string,\"description\":string}],\"actionHistory\":object[],\"action\":object,\"WhatToDoNext\":string,\"ScreenElements\":string,\"Finished\":boolean}. Rules: Output MUST be valid JSON (double quotes, no trailing commas). Include every top-level key shown in the schema, even if empty (use [] or \"\" or {}). Do not invent tools: ToolList must only contain tools provided by the user input. action must only use tool names from ToolList as keys. If required information is missing, set the relevant value to \"\" (or []), set \"Finished\" to false, and set \"WhatToDoNext\" to a concrete step to obtain the missing info.";
-    private static final String OMNI_PARSER_ADDRESS = "http://127.0.0.1:8001/";  // Can only be changed from "omniparserserver.py" file
+    private static final String OMNI_PARSER_ADDRESS = "http://127.0.0.1:8001/";  // Probably don't change this as it has to match the same address as omniparserserver.py's version
 
     // CONFIG GETTERS
     public static String getModelType()
@@ -44,9 +44,9 @@ public class config {
     {
         return IMAGE_TYPE;
     }
-    public static String getInstructions()
+    public static String getSystemPrompt()
     {
-        return INSTRUCTIONS;
+        return SYSTEM_PROMPT;
     }
     public static String getOmniParserAddress()
     {

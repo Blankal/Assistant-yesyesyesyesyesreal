@@ -2,7 +2,7 @@ package com.github.Blankal;
 
 import com.google.genai.Client;  // AI Client
 import com.google.genai.types.GenerateContentResponse;  // Generative AI
-import static com.github.Blankal.config.getInstructions;
+import static com.github.Blankal.config.getSystemPrompt;;
 
 public class GeminiAPI {
 
@@ -42,7 +42,7 @@ public class GeminiAPI {
     GenerateContentResponse response =
         client.models.generateContent(
             modelName,
-            getInstructions() + prompt + "\nImage (Base64): " + image,
+            getSystemPrompt() + prompt + "\nImage (Base64): " + image,
             null
             );
 

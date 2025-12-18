@@ -7,28 +7,27 @@ import com.github.Blankal.Tools;
 import static com.github.Blankal.ScreenCapture.getFrame;  // Generates base64 screenshots to be analyzed by OmniParse
 import static com.github.Blankal.config.getModelType;
 import static com.github.Blankal.config.getUserPrompt;
-import static com.github.Blankal.config.getInstructions;
+import static com.github.Blankal.config.getSystemPrompt;
 import static com.github.Blankal.config.getModelBrand;
-import static com.github.Blankal.Tools;
 
 public class Main 
 {
     // Instructions for task you want done
     // Super string
-    public static String payloadString = getInstructions()+" "+getUserPrompt()+" "+OmniRequest.getOmniParseOutput(getFrame());
+    public static String payloadString = getSystemPrompt()+" "+getUserPrompt()+" "+OmniRequest.getOmniParseOutput(getFrame());
 
     public static void OpenAI_Task_Resolver(String payload, int maxLoops)
     {
         try
         {
-            OpenAI_API.generateStaticFeedback(payload);
+           Tools tool = new Tools(OpenAI_API.generateStaticFeedback(payload));
 
             
             if(maxLoops > 0)
             {
                 maxLoops -= 1;
                 OpenAI_Task_Resolver(payload, maxLoops);
-                System.out.println("\n");
+                System.out.println("\n\n\n");
             }
         }
         catch (Exception e){ System.out.println("OpenAI_Task_Resolver_Error: " + e); }
@@ -37,7 +36,7 @@ public class Main
     public static void main(String[] args)
     {
         // Super combo of all instructions
-        String promptPayload = getInstructions() + " " + getUserPrompt() + " " + OmniRequest.getOmniParseOutput(getFrame());
+        String promptPayload = getSystemPrompt() + " " + getUserPrompt() + " " + OmniRequest.getOmniParseOutput(getFrame());
         try
         {
             OpenAI_API.generateStaticFeedback(payloadString);
