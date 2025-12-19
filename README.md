@@ -4,6 +4,15 @@
 ### 1. This project requires you to install Conda, the python environment manager -> [Anaconda](https://www.anaconda.com/download/success)
 For now you must activate the conda environment before running the program with the commands however this will change in future updates.
 To activate the environment, type `cd \path\to\localAgents\OmniParser\` and then `conda activate "omni"` into your terminal
+#### 1.5 If you don't hate yourself and would like to use your NVIDIA ONLY GPU, you must run these commands to allow it to use GPU:
+```
+conda activate omni
+pip uninstall torch torchvision torchaudio ultralytics -y
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install ultralytics
+python -c "import torch; print(torch.cuda.is_available())"
+```
+> Keep in mind that performance depends on the GPU used. Ex: This was tested on 2 computers, one with a 4060 (8gb) and one with a 3060 (12gb). 4060 takes on average 4.5 seconds while the 3060 requires about 9 seconds on average. This is a problem with OmniParser(image processing program) and is a fundamental issue that cannot be optimized out right now.
 
 ### 2. It is also recommended that you obtain an API key from one of the following sites:
 #### Google ([Gemini](https://ai.google.dev)), OpenAI ([GPT](https://openai.com))
@@ -35,17 +44,24 @@ If OmniParser will not work after the conda environment is activated you might n
 `pip install -r requirements.txt` under the OmniParser folder in order to install the packages required by Omni
 >Note: Do not install these outside of the conda environment as they could conflict with other programs or scripts and cause problems
 
-#### 3. "OmniParser loads forever or won't take any requests!!!"
-If the above fixes do not work, you can attempt to change the address in config and the "omniparserserver" file ADD MORE INFO LATER
+#### 3. "OmniParser/OmniParserServer keeps having issues importing things(PaddleOCR, Torch, etc.)!!!
+If OmniParser or its' server has issues importing files, this is a very clear sign that you A. Did not download the requirements.txt file correctly or B. 
 
-#### 4. "The terminal keeps saying it can't find Ollama when I use it!!!"
+#### 4. JAVA.NET.CONNECTEXCEPTION or "OmniParser loads forever or won't take any requests!!!"
+If the above fixes do not work, you can attempt to change the address in config and the "omniparserserver" file. Most often this happens because A. You forgot to run Ollama/AI cannot use the key you gave it or B. The port/IP address is already in use on your computer.
+
+#### 5. "The terminal keeps saying it can't find Ollama when I use it!!!"
 If Ollama (program, not model) is not running, it will not be executed even when the path is correct. To start Ollama, try clicking on the app or running a model with Ollama run llamaModelName to warm it up, this will also install the model you type in if it exists and you do not have it. If you do not have Ollama installed already, here is the [install link](https://ollama.com/download)
 
-#### 5. "None of these fixed my issue!!!"
-Be a programmer bruh
+#### 6. "None of these fixed my issue!!!"
+Learn to code bruh
 
 ---
 
+## Contact Info
+You can contact us at CreativeEmailName67@gmail.com(We don't read emails often)
+
+---
 ## Acknowledgements
 This project makes use of the following tools, libraries and models along with their dependencies:
 
