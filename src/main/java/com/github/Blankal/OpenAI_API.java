@@ -1,15 +1,16 @@
 package com.github.Blankal;
 
-import java.net.URI;
+import java.io.IOException;
+import java.net.URI;  // For HTTP requests to APIs
 import java.net.http.HttpClient;  // For HTTP requests to APIs
-import java.net.http.HttpRequest;  // For HTTP requests to APIs
-import java.net.http.HttpResponse;  // For HTTP response handling from APIs
+import java.net.http.HttpRequest;  // For HTTP response handling from APIs
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.charset.StandardCharsets;
-import com.google.gson.Gson;  // For Json handling / orginization
-import com.google.gson.JsonObject;  // For Json handling
-import java.io.IOException;  // For IO handling (necessary for model API calls)
-import static com.github.Blankal.config.getInstructions;
+import java.nio.charset.StandardCharsets;  // For Json handling / organization
+
+import static com.github.Blankal.config.getRequestParams;  // For Json handling
+import com.google.gson.Gson;  // For IO handling (necessary for model API calls)
+import com.google.gson.JsonObject;
 
 
     public class OpenAI_API {    
@@ -21,26 +22,34 @@ import static com.github.Blankal.config.getInstructions;
          * @throws IOException
          * @throws InterruptedException
          */
-        public static String generateStaticFeedback(String prompt) throws IOException, InterruptedException{
+        public static String generateStaticFeedback() throws IOException, InterruptedException{
+            try{
             HttpClient client = HttpClient.newHttpClient(); 
 
-            JsonObject instructions = getInstructions(prompt);
+            JsonObject requestParams = getRequestParams();
             //System.out.println(instructions.getAsString() +"\n\n\n");
 
-            String toPost = new Gson().toJson(instructions);
+            String toPost = new Gson().toJson(requestParams);
             System.out.println("TO POST: " + toPost + " \n\n\n\n");
 
+
             HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:11434/api/generate"))
+                .uri(URI.create("http://localhost:11434/api/chat"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(toPost, StandardCharsets.UTF_8))
                 .build();
             HttpResponse<String> response = client.send(request,BodyHandlers.ofString());
+            System.out.println("STATUS CODE: " + response.statusCode());
             JsonObject jsonResponse = new Gson().fromJson(response.body(), JsonObject.class);
-            //System.out.println(jsonResponse.get("response"));
+            System.out.println(jsonResponse.get("response").getAsString());
             return jsonResponse.get("response").toString();
+            } catch(Exception e){
+                System.out.println("ERROR IN API REQUEST ====>"+ e);
+                return null;
+            }
             
         }
+            
 
         // /**
         //  * Generates text feedback from the AI model using text and image input sent to an API/local server.

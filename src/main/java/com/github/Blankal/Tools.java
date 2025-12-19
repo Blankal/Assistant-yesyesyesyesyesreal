@@ -127,11 +127,11 @@ public class Tools {
                 System.out.println(actionName);
                 Object actionParameter = actionMap.get(actionName);
                 System.out.println(actionParameter);
-                if (actionName.toString().equalsIgnoreCase("mousemove")){
+                if (actionName.toString().equalsIgnoreCase("movemouse")){
                     double[] coords = ((List<Number>) actionParameter).stream().mapToDouble(Number::doubleValue).toArray();
                     this.moveMouse((int)coords[0], (int)coords[1]);
                 }
-                else if (actionName.toString().equalsIgnoreCase("mouseclick")){
+                else if (actionName.toString().equalsIgnoreCase("clickmouse")){
                     this.clickMouse(actionParameter.toString());
                 }
                 else if (actionName.toString().equalsIgnoreCase("inputtext")){
@@ -150,6 +150,12 @@ public class Tools {
                 }
                 else if (actionName.toString().equalsIgnoreCase("browseyoutube")){
                     this.browseYoutube(actionParameter.toString());
+                }
+                else if(actionName.toString().equalsIgnoreCase("holdmouse")){
+                    this.holdMouse(actionParameter.toString());
+                }
+                 else if(actionName.toString().equalsIgnoreCase("releasemouse")){
+                    this.releaseMouse(actionParameter.toString());
                 }
                 else{
                     System.out.println("Unknown action: " + actionName);
@@ -225,6 +231,34 @@ public class Tools {
             robot.mouseRelease(java.awt.event.InputEvent.BUTTON3_DOWN_MASK);
         } else if(button.equalsIgnoreCase("middle")){
             robot.mousePress(java.awt.event.InputEvent.BUTTON2_DOWN_MASK);
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON2_DOWN_MASK);
+        } else {
+            System.out.println("Unknown mouse button: " + button);
+        }
+        
+    }
+
+    public void holdMouse(String button){
+        if(button.equalsIgnoreCase("left")){
+            robot.mousePress(java.awt.event.InputEvent.BUTTON1_DOWN_MASK);
+         
+        } else if(button.equalsIgnoreCase("right")){
+            robot.mousePress(java.awt.event.InputEvent.BUTTON3_DOWN_MASK);
+        } else if(button.equalsIgnoreCase("middle")){
+            robot.mousePress(java.awt.event.InputEvent.BUTTON2_DOWN_MASK);
+        } else {
+            System.out.println("Unknown mouse button: " + button);
+        }
+        
+    }
+
+    public void releaseMouse(String button){
+        if(button.equalsIgnoreCase("left")){
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON1_DOWN_MASK);
+         
+        } else if(button.equalsIgnoreCase("right")){
+            robot.mouseRelease(java.awt.event.InputEvent.BUTTON3_DOWN_MASK);
+        } else if(button.equalsIgnoreCase("middle")){
             robot.mouseRelease(java.awt.event.InputEvent.BUTTON2_DOWN_MASK);
         } else {
             System.out.println("Unknown mouse button: " + button);

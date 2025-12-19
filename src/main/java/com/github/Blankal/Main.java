@@ -6,11 +6,6 @@ import com.github.Blankal.OmniRequest;  // Used to let the AI model see via a Js
 import com.github.Blankal.Tools;  // Tools for the ai to interact with computer
 import java.util.Scanner;
 import static com.github.Blankal.ScreenCapture.getFrame;  // Generates base64 screenshots to be analyzed by OmniParse
-import static com.github.Blankal.config.getModelType;
-import static com.github.Blankal.config.getUserPrompt;
-import static com.github.Blankal.config.getSystemPrompt;
-import static com.github.Blankal.config.getInstructions;
-import static com.github.Blankal.config.getModelBrand;
 
 public class Main 
 {
@@ -19,11 +14,11 @@ public class Main
     {
         try
         {
-           Tools tool = new Tools(OpenAI_API.generateStaticFeedback(prompt));
+           Tools tool = new Tools(OpenAI_API.generateStaticFeedback());
 
             
             if(maxLoops > 0)
-            {
+        {
                 maxLoops -= 1;
                 OpenAI_Task_Resolver(prompt, maxLoops);
                 System.out.println("\n\n\n");
@@ -36,7 +31,7 @@ public class Main
     {
         try
         {
-            OpenAI_API.generateStaticFeedback(getUserPrompt());
+            OpenAI_API.generateStaticFeedback();
         }
         catch(IllegalArgumentException e)
         {
