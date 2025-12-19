@@ -15,10 +15,12 @@ public class Main
         try
         {
            Tools tool = new Tools(OpenAI_API.generateStaticFeedback());
+           System.out.println("fuckyeah it works in here");
 
             
             if(maxLoops > 0)
         {
+            System.out.println("fuckyeah it works in here");
                 maxLoops -= 1;
                 OpenAI_Task_Resolver(prompt, maxLoops);
                 System.out.println("\n\n\n");

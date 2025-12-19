@@ -9,9 +9,9 @@ import static com.github.Blankal.OmniRequest.getOmniParseOutput;
 
 public class config {
 
-    private static final String MODEL_TYPE = "phi3:medium-128k";  // ex: "gemini-2.5-flash, llama3.2"
+    private static final String MODEL_TYPE = "llama3.1";  // ex: "gemini-2.5-flash, llama3.2"
     private static final String MODEL_BRAND = "OpenAI";   // ex: "Google", "OpenAI"
-    private static final String USER_PROMPT = "||| USER PROMPT :" +" Please open youtube."+"|||";
+    private static final String USER_PROMPT = "||| USER PROMPT :" +" find on google how to cook tiramisu, Then go on youtube and find Yoga video and open it "+"|||";
     private static final String THINK_LEVEL = "high";  // choices range from "high", "medium" and "low", lower levels = dumber but less processing time
     private static final int[] SCREEN_DIMENSIONS = {
             Toolkit.getDefaultToolkit().getScreenSize().width,
@@ -68,77 +68,63 @@ public class config {
         JsonArray tools = new JsonArray();// will add all the tools in here
         
 
-        // BROWSE TOOL 
-        JsonObject browse = new JsonObject();
-        browse.addProperty("type", "function");
+            // BROWSE TOOL 
+            JsonObject browseToolEntry = new JsonObject();
+        browseToolEntry.addProperty("type", "function");
 
-        // function block
-        JsonObject browseTool = new JsonObject();
-        browseTool.addProperty("name", "browse");
-        browseTool.addProperty("description", "Search for different topics/words/input in browser");
+        JsonObject browseFnObj = new JsonObject();
+        browseFnObj.addProperty("name", "browse");
+        browseFnObj.addProperty("description", "Search the web/browser using a plain text query (not necessarily a URL).");
 
-        // parameters block
-        JsonObject browseParam = new JsonObject();
-        browseParam.addProperty("type", "object");
+        JsonObject browseParamsObj = new JsonObject();
+        browseParamsObj.addProperty("type", "object");
 
-        // schema for the "search" argument
-        JsonObject search = new JsonObject();
-        search.addProperty("type", "string");
-        search.addProperty("description", "any String input is acceptable, url not required to search in browser");
+        JsonObject browseQuerySchema = new JsonObject();
+        browseQuerySchema.addProperty("type", "string");
+        browseQuerySchema.addProperty("description", "Search query text.");
 
-        // parameters.properties must be an object keyed by arg name
-        JsonObject properties = new JsonObject();
-        properties.add("search", search);
-        browseParam.add("properties", properties);
+        JsonObject browsePropsObj = new JsonObject();
+        browsePropsObj.add("search", browseQuerySchema);
+        browseParamsObj.add("properties", browsePropsObj);
 
-        // parameters.required must be an array of strings
-        JsonArray required = new JsonArray();
-        required.add("search");
-        browseParam.add("required", required);
+        JsonArray browseRequiredArr = new JsonArray();
+        browseRequiredArr.add("search"); // MUST match properties key
+        browseParamsObj.add("required", browseRequiredArr);
 
-        // attach parameters into function, function into tool
-        browseTool.add("parameters", browseParam);
-        browse.add("function", browseTool);
+        browseFnObj.add("parameters", browseParamsObj);
+        browseToolEntry.add("function", browseFnObj);
 
-        tools.add(browse);
+        tools.add(browseToolEntry);
 
+        // =========================
+        // openUrl (strict URL open)
+        // =========================
+        JsonObject openUrlToolEntry = new JsonObject();
+        openUrlToolEntry.addProperty("type", "function");
 
-        //===================================================================
-        //URL-BROWSE
-        // BROWSE TOOL 
-        JsonObject urlBrowse = new JsonObject();
-        browse.addProperty("type", "function");
+        JsonObject openUrlFnObj = new JsonObject();
+        openUrlFnObj.addProperty("name", "openUrl"); // IMPORTANT: unique name (not "browse")
+        openUrlFnObj.addProperty("description", "Open a specific URL in the browser (must start with http:// or https://).");
 
-        // function block
-        JsonObject urlBrowseTool = new JsonObject();
-        urlBrowseTool.addProperty("name", "browse");
-        urlBrowseTool.addProperty("description", "Search STRICTLY WITH URL for different topics/words/input ");
+        JsonObject openUrlParamsObj = new JsonObject();
+        openUrlParamsObj.addProperty("type", "object");
 
-        // parameters block
-        JsonObject  urlBrowseParam = new JsonObject();
-        urlBrowseParam.addProperty("type", "object");
+        JsonObject urlSchema = new JsonObject();
+        urlSchema.addProperty("type", "string");
+        urlSchema.addProperty("description", "Full URL to open, including http:// or https://.");
 
-        // schema for the "search" argument
-        JsonObject urlSearch = new JsonObject();
-        urlSearch.addProperty("type", "string");
-        urlSearch.addProperty("description", "URL REQUIRED TO FOR SEARCH ");
+        JsonObject openUrlPropsObj = new JsonObject();
+        openUrlPropsObj.add("url", urlSchema);
+        openUrlParamsObj.add("properties", openUrlPropsObj);
 
-        // parameters.properties must be an object keyed by arg name
-        JsonObject urlProperties = new JsonObject();
-        urlProperties.add("search", urlSearch);
-        urlBrowseParam.add("properties", urlProperties);
+        JsonArray openUrlRequiredArr = new JsonArray();
+        openUrlRequiredArr.add("url"); // MUST match properties key
+        openUrlParamsObj.add("required", openUrlRequiredArr);
 
-        // parameters.required must be an array of strings
-        JsonArray urlRequired = new JsonArray();
-        urlRequired.add("urlSearch");
-        urlBrowseParam.add("required", urlRequired);
+        openUrlFnObj.add("parameters", openUrlParamsObj);
+        openUrlToolEntry.add("function", openUrlFnObj);
 
-        // attach parameters into function, function into tool
-        urlBrowseTool.add("parameters", urlBrowseParam);
-        browse.add("function", urlBrowseTool);
-
-        tools.add(urlBrowse);
-
+        tools.add(openUrlToolEntry);
 
         // =======================================================================================================================================================================
         // INPUT TEXT TOOL (Ollama tool schema)
@@ -614,6 +600,34 @@ public class config {
         }
     }
 
+    public static JsonObject getUserMessage() {
+    JsonObject userMsgObj = new JsonObject();
+    userMsgObj.addProperty("role", "user");
+    userMsgObj.addProperty(
+        "content",
+        getUserPrompt() + ". Return ONLY valid JSON matching the provided schema. No extra text."
+    );
+    return userMsgObj;
+    
+    
+    }
+
+    public static JsonObject getSystemMessage() {
+    JsonObject sysMsgObj = new JsonObject();
+    sysMsgObj.addProperty("role", "system");
+    sysMsgObj.addProperty("content", getSystemPrompt());
+    return sysMsgObj;
+    }
+
+    public static JsonArray buildMessages() {
+        JsonArray messagesArr = new JsonArray();
+        messagesArr.add(getSystemMessage());
+        messagesArr.add(getUserMessage());
+        return messagesArr;
+    }
+
+
+
     /**
      * Unifies all JSON structures required for making the request
      * @return JsonObject for http request to OpenAI API interaction
@@ -622,12 +636,12 @@ public class config {
     {
         JsonObject jsonPayload = new JsonObject();
         jsonPayload.addProperty("model", getModelType());
-        jsonPayload.addProperty("think", getThinkLevel());
+        // jsonPayload.addProperty("think", getThinkLevel());
         jsonPayload.add("tools", getTools());
         jsonPayload.addProperty("system", getSystemPrompt());
-        jsonPayload.addProperty("prompt", getUserPrompt() + ". Return ONLY valid JSON matching the provided schema. No extra text.");
+        jsonPayload.add("messages", buildMessages());
         jsonPayload.addProperty("stream", false);
-        jsonPayload.addProperty("keep_alive","5");
+        jsonPayload.addProperty("keep_alive","5m");
         jsonPayload.addProperty("logprobs",false);
 
         return jsonPayload;

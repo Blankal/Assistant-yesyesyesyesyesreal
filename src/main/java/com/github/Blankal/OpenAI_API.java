@@ -40,9 +40,12 @@ import com.google.gson.JsonObject;
                 .build();
             HttpResponse<String> response = client.send(request,BodyHandlers.ofString());
             System.out.println("STATUS CODE: " + response.statusCode());
+            System.out.println(response.body());
             JsonObject jsonResponse = new Gson().fromJson(response.body(), JsonObject.class);
-            System.out.println(jsonResponse.get("response").getAsString());
-            return jsonResponse.get("response").toString();
+            System.out.println(jsonResponse.get("message"));
+            System.out.println(jsonResponse.get("done_reason").getAsString());
+            System.out.println( jsonResponse.getAsJsonObject("message"));
+            return jsonResponse.get("message").toString();
             } catch(Exception e){
                 System.out.println("ERROR IN API REQUEST ====>"+ e);
                 return null;

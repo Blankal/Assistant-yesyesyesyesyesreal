@@ -106,6 +106,7 @@ public class Tools {
         ObjectMapper mapper = new ObjectMapper();
         try {
             robot = new Robot();
+            System.out.println("23333333333333333333333333333333333333333333333333333333333333");
         } catch (java.awt.AWTException e) {
             System.out.println("Failed to initialize Robot: " + e);
         }
