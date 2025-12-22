@@ -1,12 +1,5 @@
 package com.github.Blankal;
 
-import com.github.Blankal.GeminiAPI;  // Generate text based off text and/or image input (Google)
-import com.github.Blankal.OpenAI_API;  // Generate Text based off Text and/or image input (OpenAI)
-import com.github.Blankal.OmniRequest;  // Used to let the AI model see via a Json array
-import com.github.Blankal.Tools;  // Tools for the ai to interact with computer
-import java.util.Scanner;
-import static com.github.Blankal.ScreenCapture.getFrame;  // Generates base64 screenshots to be analyzed by OmniParse
-
 public class Main 
 {
 
@@ -14,7 +7,7 @@ public class Main
     {
         try
         {
-           Tools tool = new Tools(OpenAI_API.generateStaticFeedback());
+        OpenAI_API.generateStaticFeedback();
            System.out.println("fuckyeah it works in here");
 
             
@@ -33,7 +26,7 @@ public class Main
     {
         try
         {
-            OpenAI_API.generateStaticFeedback();
+          OpenAI_API.generateStaticFeedback();
         }
         catch(IllegalArgumentException e)
         {

@@ -8,9 +8,11 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;  // For Json handling / organization
 
-import static com.github.Blankal.config.getRequestParams;  // For Json handling
-import com.google.gson.Gson;  // For IO handling (necessary for model API calls)
+import static com.github.Blankal.config.getRequestParams;
+import com.google.gson.Gson;  // For Json handling
+import com.google.gson.JsonArray;  // For IO handling (necessary for model API calls)
 import com.google.gson.JsonObject;
+
 
 
     public class OpenAI_API {    
@@ -42,15 +44,47 @@ import com.google.gson.JsonObject;
             System.out.println("STATUS CODE: " + response.statusCode());
             System.out.println(response.body());
             JsonObject jsonResponse = new Gson().fromJson(response.body(), JsonObject.class);
-            System.out.println(jsonResponse.get("message"));
-            System.out.println(jsonResponse.get("done_reason").getAsString());
-            System.out.println( jsonResponse.getAsJsonObject("message"));
+            try {
+                parsedTools(jsonResponse);
+            } finally {
+            }
+            // System.out.println(jsonResponse.get("message"));
+            // System.out.println(jsonResponse.get("done_reason").getAsString());
+            // System.out.println( jsonResponse.getAsJsonObject("message"));
             return jsonResponse.get("message").toString();
             } catch(Exception e){
                 System.out.println("ERROR IN API REQUEST ====>"+ e);
                 return null;
             }
             
+        }
+
+        public static void parsedTools(JsonObject response){
+            JsonObject message = response.getAsJsonObject("message");
+           
+            String content = message.has("content") ? message.get("content").getAsString() : "";
+            //  System.out.println("TOOL_CALLS JSON");
+            JsonArray toolArr = message.getAsJsonArray("tool_calls");
+            // System.out.println(toolArr);
+            for(Object value : toolArr){
+                JsonObject obj = (JsonObject) value;
+                
+                JsonObject tools = (JsonObject)(obj.get("function"));
+                // Tools tool = new Tools(tools);
+
+                JsonObject arguments = tools.getAsJsonObject("arguments");
+                System.out.println(arguments.get("coords"));
+                // System.out.println(coords.get(0).getAsInt());
+                
+                // for(var entry: arguments.entrySet()){
+                //     System.out.println(entry.getValue());
+                // }
+                
+                
+                // Tools toolSet = new Tools(tools);
+            }
+
+
         }
             
 

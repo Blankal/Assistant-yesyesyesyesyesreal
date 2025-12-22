@@ -2,16 +2,16 @@ package com.github.Blankal;
 
 import java.awt.Toolkit;
 
+import static com.github.Blankal.OmniRequest.getOmniParseOutput;
 import static com.github.Blankal.ScreenCapture.getFrame;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import static com.github.Blankal.OmniRequest.getOmniParseOutput;
 
 public class config {
 
     private static final String MODEL_TYPE = "llama3.1";  // ex: "gemini-2.5-flash, llama3.2"
     private static final String MODEL_BRAND = "OpenAI";   // ex: "Google", "OpenAI"
-    private static final String USER_PROMPT = "||| USER PROMPT :" +" find on google how to cook tiramisu, Then go on youtube and find Yoga video and open it "+"|||";
+    private static final String USER_PROMPT = "||| USER PROMPT :" +" move a mouse in the middle of the screen";
     private static final String THINK_LEVEL = "high";  // choices range from "high", "medium" and "low", lower levels = dumber but less processing time
     private static final int[] SCREEN_DIMENSIONS = {
             Toolkit.getDefaultToolkit().getScreenSize().width,

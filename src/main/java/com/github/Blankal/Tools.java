@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collections;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
 
 /*
 In order for LLM agent be able to work with computer environment it will return 
@@ -102,68 +103,56 @@ public class Tools {
 
 
 
-    public Tools(String response) {
+    public Tools(JsonObject response) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             robot = new Robot();
-            System.out.println("23333333333333333333333333333333333333333333333333333333333333");
         } catch (java.awt.AWTException e) {
             System.out.println("Failed to initialize Robot: " + e);
         }
 
-        try {
-            // System.out.println("Raw response: " + response); -- debugging purpose 
-            actions = mapper.readValue(response, Map.class); // string json to Map
-        } catch (Exception e) {
-            System.out.println("Failed to convert response to json dataset: " + e);
-        }
         // System.out.println("Parsed actions: " + actions);
         // System.out.println(actions.get("action"));
+        String action =  response.get("name").getAsString();
+        JsonObject arguments = (JsonObject)(response.get("arguments"));
+        String parameter = "";
+        for(var entry: arguments.entrySet()){
+            parameter = entry.getValue().getAsString();
+        }
+        System.out.println(action);
+        System.out.println(parameter);
 
-        Object actionObj = actions.get("action");
-        System.out.println(actionObj);
-        if (actionObj instanceof Map<?, ?> actionMap) {
-
-            for (Object actionName : actionMap.keySet()) {
-                System.out.println(actionName);
-                Object actionParameter = actionMap.get(actionName);
-                System.out.println(actionParameter);
-                if (actionName.toString().equalsIgnoreCase("movemouse")){
-                    double[] coords = ((List<Number>) actionParameter).stream().mapToDouble(Number::doubleValue).toArray();
-                    this.moveMouse((int)coords[0], (int)coords[1]);
-                }
-                else if (actionName.toString().equalsIgnoreCase("clickmouse")){
-                    this.clickMouse(actionParameter.toString());
-                }
-                else if (actionName.toString().equalsIgnoreCase("inputtext")){
-                    this.inputText(actionParameter.toString());
-                }
-                else if (actionName.toString().equalsIgnoreCase("scrollmouse")){
-                    int notches = ((Number) actionParameter).intValue();
-                    
-                    this.scrollMouse(notches);
-                }
-                else if (actionName.toString().equalsIgnoreCase("browse")){
-                    this.browse(actionParameter.toString());
-                }
-                else if (actionName.toString().equalsIgnoreCase("urlbrowse")){
-                    this.urlBrowse(actionParameter.toString());
-                }
-                else if (actionName.toString().equalsIgnoreCase("browseyoutube")){
-                    this.browseYoutube(actionParameter.toString());
-                }
-                else if(actionName.toString().equalsIgnoreCase("holdmouse")){
-                    this.holdMouse(actionParameter.toString());
-                }
-                 else if(actionName.toString().equalsIgnoreCase("releasemouse")){
-                    this.releaseMouse(actionParameter.toString());
-                }
-                else{
-                    System.out.println("Unknown action: " + actionName);
-                }
-            }
-        } else {
-            System.out.println("'action' is missing or not an object: " + actionObj);
+        if (action.equalsIgnoreCase("movemouse")){
+            // int x = arguments.get("coords");
+        }
+        else if (action.equalsIgnoreCase("clickmouse")){
+            this.clickMouse(parameter);
+        }
+        else if (action.equalsIgnoreCase("inputtext")){
+            this.inputText(parameter);
+        }
+        else if (action.equalsIgnoreCase("scrollmouse")){
+            // int notches = ((Number) parameter).intValue();
+            
+            // this.scrollMouse(notches);
+        }
+        else if (action.equalsIgnoreCase("browse")){
+            this.browse(parameter);
+        }
+        else if (action.equalsIgnoreCase("urlbrowse")){
+            this.urlBrowse(parameter);
+        }
+        else if (action.equalsIgnoreCase("browseYoutube")){
+            this.browseYoutube(parameter);
+        }
+        else if(action.equalsIgnoreCase("holdmouse")){
+            this.holdMouse(parameter);
+        }
+            else if(action.equalsIgnoreCase("releasemouse")){
+            this.releaseMouse(parameter);
+        }
+        else{
+            System.out.println("Unknown action: " + action);
         }
         // for (Map.Entry<String, Object> value : actions.entrySet()) {
         //     System.out.println(value);
