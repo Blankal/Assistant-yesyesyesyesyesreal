@@ -123,7 +123,14 @@ public class Tools {
         System.out.println(parameter);
 
         if (action.equalsIgnoreCase("movemouse")){
-            // int x = arguments.get("coords");
+            String coord = arguments.get("coords").getAsString();
+                coord =coord.substring(1,coord.length()-1).replace(" ", "");
+                String[] coords = coord.split(",");
+                // System.out.println(Integer.parseInt(coords[0]));
+                // System.out.println(Integer.parseInt(coords[1]));
+                int x = Integer.parseInt(coords[0]);
+                int y = Integer.parseInt(coords[1]);
+                this.moveMouse(x, y);
         }
         else if (action.equalsIgnoreCase("clickmouse")){
             this.clickMouse(parameter);

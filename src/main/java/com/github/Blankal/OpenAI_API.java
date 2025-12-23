@@ -70,10 +70,15 @@ import com.google.gson.JsonObject;
                 JsonObject obj = (JsonObject) value;
                 
                 JsonObject tools = (JsonObject)(obj.get("function"));
-                // Tools tool = new Tools(tools);
+                Tools tool = new Tools(tools);
 
-                JsonObject arguments = tools.getAsJsonObject("arguments");
-                System.out.println(arguments.get("coords"));
+                // JsonObject arguments = tools.getAsJsonObject("arguments");
+                // String coord = arguments.get("coords").getAsString();
+                // coord =coord.substring(1,coord.length()-1).replace(" ", "");
+                // String[] coords = coord.split(",");
+                // System.out.println(Integer.parseInt(coords[0]));
+                // System.out.println(Integer.parseInt(coords[1]));
+
                 // System.out.println(coords.get(0).getAsInt());
                 
                 // for(var entry: arguments.entrySet()){
