@@ -71,22 +71,6 @@ import com.google.gson.JsonObject;
                 
                 JsonObject tools = (JsonObject)(obj.get("function"));
                 Tools tool = new Tools(tools);
-
-                // JsonObject arguments = tools.getAsJsonObject("arguments");
-                // String coord = arguments.get("coords").getAsString();
-                // coord =coord.substring(1,coord.length()-1).replace(" ", "");
-                // String[] coords = coord.split(",");
-                // System.out.println(Integer.parseInt(coords[0]));
-                // System.out.println(Integer.parseInt(coords[1]));
-
-                // System.out.println(coords.get(0).getAsInt());
-                
-                // for(var entry: arguments.entrySet()){
-                //     System.out.println(entry.getValue());
-                // }
-                
-                
-                // Tools toolSet = new Tools(tools);
             }
 
 
@@ -95,7 +79,7 @@ import com.google.gson.JsonObject;
 
         // /**
         //  * Generates text feedback from the AI model using text and image input sent to an API/local server.
-        //  * Mostly deprecated
+        //  * deprecated
         //  * @param prompt Text prompt to instruct the model
         //  * @param image Image in base64 string format
         //  * @throws IOException
