@@ -23,8 +23,8 @@ public class config {
             "Put at most ONE tool call per turn inside the JSON field \"action\" using exactly one tool name and the exact argument type; " +
             "if no tool is needed set \"action\":{} and continue updating state fields. " +
             "Never invent tools or screen elements; use only ToolList and ScreenElements provided. " +
-            "Prefer urlBrowse for known URLs; use browse only for search queries; use wait after navigation when needed.|||"+
-            "This is a JSON of all the elements currnetly on the screen -->> "+ getOmniParseOutput(getFrame());
+            "Prefer urlBrowse for given/known URLs; use browse only for search queries; use wait after navigation when needed.|||"+
+            "This is a JSON of all the elements currently on the screen -->> "+ getOmniParseOutput(getFrame());
 
     private static final String OMNI_PARSER_ADDRESS = "http://127.0.0.1:8001/";
 
